@@ -1,14 +1,10 @@
 from .config import HOME
 import os.path as osp
-import sys
 import torch
 import torch.utils.data as data
 import cv2
 import numpy as np
-if sys.version_info[0] == 2:
-    import xml.etree.cElementTree as ET
-else:
-    import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as ET
 
 VOC_CLASSES = (  # always index 0
     'aeroplane', 'bicycle', 'bird', 'boat',
@@ -17,7 +13,7 @@ VOC_CLASSES = (  # always index 0
     'motorbike', 'person', 'pottedplant',
     'sheep', 'sofa', 'train', 'tvmonitor')
 
-# note: if you used our download scripts, this should be right
+
 VOC_ROOT = osp.join(HOME, "data/VOCdevkit/")
 
 
@@ -33,9 +29,6 @@ class VOCAnnotationTransform(object):
 
     def __call__(self, target, width, height):
         """
-        Arguments:
-            target (annotation) : the target annotation to be made usable
-                will be an ET.Element
         Returns:
             a list containing lists of bounding boxes  [bbox coords, class name]
         """
@@ -113,26 +106,3 @@ class VOCDetection(data.Dataset):
             target = np.hstack((boxes, np.expand_dims(labels, axis=1)))
         return torch.from_numpy(img).permute(2, 0, 1), target, height, width
         # return torch.from_numpy(img), target, height, width
-
-    def pull_image(self, index):
-        '''Returns the original image object at index in PIL form
-
-        '''
-        img_id = self.ids[index]
-        return cv2.imread(self._imgpath % img_id, cv2.IMREAD_COLOR)
-
-    def pull_anno(self, index):
-        '''Returns the original annotation of image at index
-
-        Note: not using self.__getitem__(), as any transformations passed in
-        could mess up this functionality.
-        '''
-        img_id = self.ids[index]
-        anno = ET.parse(self._annopath % img_id).getroot()
-        gt = self.target_transform(anno, 1, 1)
-        return img_id[1], gt
-
-    def pull_tensor(self, index):
-        '''Returns the original image at an index in tensor form
-        '''
-        return torch.Tensor(self.pull_image(index)).unsqueeze_(0)

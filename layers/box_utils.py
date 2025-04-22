@@ -5,10 +5,6 @@ import torch
 def point_form(boxes):
     """ Convert prior_boxes to (xmin, ymin, xmax, ymax)
     representation for comparison to point form ground truth data.
-    Args:
-        boxes: (tensor) center-size default boxes from priorbox layers.
-    Return:
-        boxes: (tensor) Converted xmin, ymin, xmax, ymax form of boxes.
     """
     return torch.cat((boxes[:, :2] - boxes[:, 2:]/2,     # xmin, ymin
                      boxes[:, :2] + boxes[:, 2:]/2), 1)  # xmax, ymax
@@ -17,10 +13,6 @@ def point_form(boxes):
 def center_size(boxes):
     """ Convert prior_boxes to (cx, cy, w, h)
     representation for comparison to center-size form ground truth data.
-    Args:
-        boxes: (tensor) point_form boxes
-    Return:
-        boxes: (tensor) Converted xmin, ymin, xmax, ymax form of boxes.
     """
     return torch.cat((boxes[:, 2:] + boxes[:, :2])/2,  # cx, cy
                      boxes[:, 2:] - boxes[:, :2], 1)  # w, h
@@ -31,11 +23,6 @@ def intersect(box_a, box_b):
     [A,2] -> [A,1,2] -> [A,B,2]
     [B,2] -> [1,B,2] -> [A,B,2]
     Then we compute the area of intersect between box_a and box_b.
-    Args:
-      box_a: (tensor) bounding boxes, Shape: [A,4].
-      box_b: (tensor) bounding boxes, Shape: [B,4].
-    Return:
-      (tensor) intersection area, Shape: [A,B].
     """
     A = box_a.size(0)
     B = box_b.size(0)
@@ -53,11 +40,6 @@ def jaccard(box_a, box_b):
     ground truth boxes and default boxes.
     E.g.:
         A ∩ B / A ∪ B = A ∩ B / (area(A) + area(B) - A ∩ B)
-    Args:
-        box_a: (tensor) Ground truth bounding boxes, Shape: [num_objects,4]
-        box_b: (tensor) Prior boxes from priorbox layers, Shape: [num_priors,4]
-    Return:
-        jaccard overlap: (tensor) Shape: [box_a.size(0), box_b.size(0)]
     """
     inter = intersect(box_a, box_b)
     area_a = ((box_a[:, 2]-box_a[:, 0]) *
@@ -174,13 +156,6 @@ def log_sum_exp(x):
 def nms(boxes, scores, overlap=0.5, top_k=200):
     """
     Apply non-maximum suppression (NMS) to filter overlapping bounding boxes.
-
-    Args:
-        boxes (Tensor): Shape [num_priors, 4].
-        scores (Tensor): Shape [num_priors].
-        overlap (float): IoU threshold.
-        top_k (int): Maximum number of boxes to keep.
-
     Returns:
         keep (Tensor): Indices of kept boxes.
         count (int): Number of kept boxes.
