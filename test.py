@@ -20,7 +20,7 @@ parser.add_argument('--save_folder', default='eval/', type=str,
                     help='Dir to save results')
 parser.add_argument('--visual_threshold', default=0.6, type=float,
                     help='Final confidence threshold')
-parser.add_argument('--cuda', default=True, type=bool,
+parser.add_argument('--cuda', default=False, type=bool,
                     help='Use cuda to train model')
 parser.add_argument('--voc_root', default=VOC_ROOT, help='Location of VOC root directory')
 parser.add_argument('-f', default=None, type=str, help="Dummy arg so we can load in Jupyter Notebooks")
@@ -86,10 +86,10 @@ def test_voc():
     # load data
     testset = VOCDetection(args.voc_root, [('2007', 'test')], None, VOCAnnotationTransform())
     if args.cuda:
-        net = net.cuda()
+        net = net
         cudnn.benchmark = True
     # evaluation
-    test_net(args.save_folder, net, args.cuda, testset,
+    test_net(args.save_folder, net, False, testset,
              BaseTransform(net.size, (104, 117, 123)),
              thresh=args.visual_threshold)
 

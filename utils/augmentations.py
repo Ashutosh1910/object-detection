@@ -54,8 +54,6 @@ class Compose(object):
 
 
 class Lambda(object):
-    """Applies a lambda as a transform."""
-
     def __init__(self, lambd):
         assert isinstance(lambd, types.LambdaType)
         self.lambd = lambd
@@ -206,18 +204,6 @@ class ToTensor(object):
 
 
 class RandomSampleCrop(object):
-    """Crop
-    Arguments:
-        img (Image): the image being input during training
-        boxes (Tensor): the original bounding boxes in pt form
-        labels (Tensor): the class labels for each bbox
-        mode (float tuple): the min and max jaccard overlaps
-    Return:
-        (img, boxes, classes)
-            img (Image): the cropped image
-            boxes (Tensor): the adjusted bounding boxes in pt form
-            labels (Tensor): the class labels for each bbox
-    """
     def __init__(self):
         self.sample_options = (
             # using entire original input image
@@ -347,27 +333,12 @@ class RandomMirror(object):
 
 
 class SwapChannels(object):
-    """Transforms a tensorized image by swapping the channels in the order
-     specified in the swap tuple.
-    Args:
-        swaps (int triple): final order of channels
-            eg: (2, 1, 0)
-    """
 
     def __init__(self, swaps):
         self.swaps = swaps
 
     def __call__(self, image):
-        """
-        Args:
-            image (Tensor): image tensor to be transformed
-        Return:
-            a tensor with channels swapped according to swap
-        """
-        # if torch.is_tensor(image):
-        #     image = image.data.cpu().numpy()
-        # else:
-        #     image = np.array(image)
+
         image = image[:, :, self.swaps]
         return image
 

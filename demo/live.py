@@ -40,7 +40,7 @@ def cv2_demo(net, transform):
         return frame
 
     # start video stream thread, allow buffer to fill
-    print("[INFO] starting threaded video stream...")
+    print("starting threaded video stream...")
     stream = WebcamVideoStream(src=0).start()  # default camera
     time.sleep(1.0)
     # start fps timer
@@ -64,6 +64,9 @@ def cv2_demo(net, transform):
         cv2.imshow('frame', frame)
         if key == 27:  # exit
             break
+    # cleanup
+    stream.stop()
+    cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
@@ -88,4 +91,4 @@ if __name__ == '__main__':
 
     # cleanup
     cv2.destroyAllWindows()
-    stream.stop()
+

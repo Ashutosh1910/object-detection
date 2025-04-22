@@ -8,22 +8,6 @@ import os
 
 
 class SSD(nn.Module):
-    """Single Shot Multibox Architecture
-    The network is composed of a base VGG network followed by the
-    added multibox conv layers.  Each multibox layer branches into
-        1) conv2d for class conf scores
-        2) conv2d for localization predictions
-        3) associated priorbox layer to produce default bounding
-           boxes specific to the layer's feature map size.
-    See: https://arxiv.org/pdf/1512.02325.pdf for more details.
-
-    Args:
-        phase: (string) Can be "test" or "train"
-        size: input image size
-        base: VGG16 layers for input, size of either 300 or 500
-        extras: extra layers that feed to multibox loc and conf layers
-        head: "multibox head" consists of loc and conf conv layers
-    """
 
     def __init__(self, phase, size, base, extras, head, num_classes):
         super(SSD, self).__init__()
@@ -31,7 +15,8 @@ class SSD(nn.Module):
         self.num_classes = num_classes
         self.cfg = (coco, voc)[num_classes == 21]
         self.priorbox = PriorBox(self.cfg)
-        self.priors = Variable(self.priorbox.forward(), volatile=True)
+        self.priors = Variable(self.priorbox.forward())
+        self.priors.requires_grad = False      
         self.size = size
 
         # SSD network
@@ -48,24 +33,7 @@ class SSD(nn.Module):
             self.detect = Detect(num_classes, 0, 200, 0.01, 0.45)
 
     def forward(self, x):
-        """Applies network layers and ops on input image(s) x.
 
-        Args:
-            x: input image or batch of images. Shape: [batch,3,300,300].
-
-        Return:
-            Depending on phase:
-            test:
-                Variable(tensor) of output class label predictions,
-                confidence score, and corresponding location predictions for
-                each object detected. Shape: [batch,topk,7]
-
-            train:
-                list of concat outputs from:
-                    1: confidence layers, Shape: [batch*num_priors,num_classes]
-                    2: localization layers, Shape: [batch,num_priors*4]
-                    3: priorbox layers, Shape: [2,num_priors*4]
-        """
         sources = list()
         loc = list()
         conf = list()
@@ -96,7 +64,8 @@ class SSD(nn.Module):
         loc = torch.cat([o.view(o.size(0), -1) for o in loc], 1)
         conf = torch.cat([o.view(o.size(0), -1) for o in conf], 1)
         if self.phase == "test":
-            output = self.detect(
+            output = self.detect.apply(
+                self.num_classes, 0, 200, 0.01, 0.45,
                 loc.view(loc.size(0), -1, 4),                   # loc preds
                 self.softmax(conf.view(conf.size(0), -1,
                              self.num_classes)),                # conf preds

@@ -20,8 +20,8 @@ class Detect(Function):
             raise ValueError('nms_threshold must be non negative.')
         self.conf_thresh = conf_thresh
         self.variance = cfg['variance']
-
-    def forward(self, loc_data, conf_data, prior_data):
+    @staticmethod
+    def forward(self, num_classes, bkg_label, top_k, conf_thresh, nms_thresh,loc_data, conf_data, prior_data):
         """
         Args:
             loc_data: (tensor) Loc preds from loc layers
@@ -31,6 +31,7 @@ class Detect(Function):
             prior_data: (tensor) Prior boxes and variances from priorbox layers
                 Shape: [1,num_priors,4]
         """
+        self=Detect(num_classes, bkg_label, top_k, conf_thresh, nms_thresh)
         num = loc_data.size(0)  # batch size
         num_priors = prior_data.size(0)
         output = torch.zeros(num, self.num_classes, self.top_k, 5)
