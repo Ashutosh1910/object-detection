@@ -1,16 +1,10 @@
 from .voc0712 import VOCDetection, VOCAnnotationTransform, VOC_CLASSES, VOC_ROOT
 import torch
+from .config import *
 import cv2
 import numpy as np
 
 def detection_collate(batch):
-    """
-    Return:
-        A tuple containing:
-            1) (tensor) batch of images stacked on their 0 dim
-            2) (list of tensors) annotations for a given image are stacked on
-                                 0 dim
-    """
     targets = []
     imgs = []
     for sample in batch:

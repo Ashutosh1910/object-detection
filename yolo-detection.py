@@ -63,21 +63,18 @@ while True:
         for i in indexes.flatten():
             x, y, w, h = boxes[i]
             label = f"{classes[class_ids[i]]}: {confidences[i]:.2f}"
-            color = (0, 255, 0)  # Green color for bounding box
+            color = (0, 255, 0) 
             cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
             cv2.putText(frame, label, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
-    # Display inference time
     fps_label = f"Inference Time: {(end - start):.2f} s"
     cv2.putText(frame, fps_label, (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
 
-    # Show the frame
     cv2.imshow("YOLOv4 Real-Time Detection", frame)
 
     # Break loop on 'q' key press
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-# Release resources
 cap.release()
 cv2.destroyAllWindows()
