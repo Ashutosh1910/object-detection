@@ -4,14 +4,12 @@ from torch.autograd import Variable
 import cv2
 import time
 from imutils.video import FPS, WebcamVideoStream
-import argparse
+class Config:
+    def __init__(self):
+        self.cuda = False
+        self.weights = 'weights/ssd_300_VOC0712.pth'
 
-parser = argparse.ArgumentParser(description='Single Shot MultiBox Detection')
-parser.add_argument('--weights', default='weights/ssd_300_VOC0712.pth',
-                    type=str, help='Trained state_dict file path')
-parser.add_argument('--cuda', default=False, type=bool,
-                    help='Use cuda in live demo')
-args = parser.parse_args()
+args = Config()
 
 COLORS = [(255, 0, 0), (0, 255, 0), (0, 0, 255)]
 FONT = cv2.FONT_HERSHEY_SIMPLEX
