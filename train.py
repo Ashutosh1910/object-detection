@@ -18,9 +18,9 @@ args=Config()
 args.cuda = torch.cuda.is_available() and args.cuda
 if torch.cuda.is_available():
     if args.cuda:
-        torch.set_default_tensor_type('torch.cuda.FloatTensor')
+        torch.set_default_device('cuda')
 else:
-    torch.set_default_tensor_type('torch.FloatTensor')
+    torch.set_default_device('cpu')
 
 if not os.path.exists('weights/'):
     os.mkdir('weights/')
@@ -42,7 +42,7 @@ def train():
 
 
     vgg_weights = torch.load('weights/' + 'vgg16_reducedfc.pth')
-    print('Loading base network...')
+    print('loading network...')
     ssd_net.vgg.load_state_dict(vgg_weights)
 
     if args.cuda:
@@ -60,12 +60,8 @@ def train():
     loc_loss = 0
     conf_loss = 0
     epoch = 0
-    print('Loading the dataset...')
-    print('Training SSD on:', dataset.name)
-
+    print('loading dataset')
     step_index = 0
-
-
     data_loader = data.DataLoader(dataset, 32,
                                   num_workers=4,
                                   shuffle=True, collate_fn=detection_collate,
@@ -74,9 +70,6 @@ def train():
     batch_iterator = iter(data_loader)
     for iteration in range(0, 120000):
 
-        if iteration in (80000, 100000, 120000):
-            step_index += 1
-            adjust_learning_rate(optimizer, 0.1, step_index)
 
         # load train data
         images, targets = next(batch_iterator)
@@ -100,27 +93,16 @@ def train():
         t1 = time.time()
         loc_loss += loss_l.item()
         conf_loss += loss_c.item()
-        print(loss.item())
+        # print(loss.item())
 
         if iteration % 10 == 0:
             print('timer: %.4f sec.' % (t1 - t0))
             print('iter ' + repr(iteration) + ' || Loss: %.4f ||' % (loss.item()), end=' ')
 
 
-        if iteration != 0 and iteration % 5000 == 0:
-            print('Saving state, iter:', iteration)
-            torch.save(ssd_net.state_dict(), 'weights/ssd300_VOC_' +
-                       repr(iteration) + '.pth')
             
     torch.save(ssd_net.state_dict(),
             'weights/' + '' + 'VOC' + '.pth')
-
-
-def adjust_learning_rate(optimizer, gamma, step):
-    lr = 1e-3 * (gamma ** (step))
-    for param_group in optimizer.param_groups:
-        param_group['lr'] = lr
-
 
 
 

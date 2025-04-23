@@ -1,11 +1,7 @@
-# config.py
 import os.path
-
-# gets home dir cross platform
 HOME = os.path.expanduser("~")
 
 
-# SSD300 CONFIGS
 voc = {
     'num_classes': 21,
     'feature_maps': [38, 19, 10, 5, 3, 1],

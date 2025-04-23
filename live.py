@@ -84,8 +84,8 @@ if __name__ == '__main__':
     # stop the timer and display FPS information
     fps.stop()
 
-    print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
-    print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
+    print("elasped time: {:.2f}".format(fps.elapsed()))
+    print("approx. FPS: {:.2f}".format(fps.fps()))
 
     # cleanup
     cv2.destroyAllWindows()

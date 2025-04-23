@@ -144,10 +144,6 @@ def do_python_eval(output_dir='output', use_07=True):
     for ap in aps:
         print('{:.3f}'.format(ap))
     print('{:.3f}'.format(np.mean(aps)))
-    print('~~~~~~~~')
-    print('')
-    print('--------------------------------------------------------------')
-    print('--------------------------------------------------------------')
 
 
 def voc_ap(rec, prec, use_07_metric=True):
@@ -341,7 +337,7 @@ def test_net(save_folder, net, cuda, dataset, transform, top_k,
     with open(det_file, 'wb') as f:
         pickle.dump(all_boxes, f, pickle.HIGHEST_PROTOCOL)
 
-    print('Evaluating detections')
+    print('evaluating detections')
     evaluate_detections(all_boxes, output_dir, dataset)
 
 

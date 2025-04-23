@@ -22,16 +22,16 @@ while True:
 
     height, width = frame.shape[:2]
 
-    # Create blob from image
+    # create blob from image
     blob = cv2.dnn.blobFromImage(frame, 1/255.0, (416, 416), swapRB=True, crop=False)
     net.setInput(blob)
 
-    # Run forward pass
+    
     start = time.time()
     outputs = net.forward(output_layers)
     end = time.time()
 
-    # Initialize lists
+
     boxes = []
     confidences = []
     class_ids = []
@@ -59,7 +59,7 @@ while True:
     indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
     if len(indexes) > 0:
         
-    # Draw bounding boxes
+    # draw bounding boxes
         for i in indexes.flatten():
             x, y, w, h = boxes[i]
             label = f"{classes[class_ids[i]]}: {confidences[i]:.2f}"
